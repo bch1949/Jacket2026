@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบลงทะเบียน Size เสื้อแจ็คเก็ต BCH</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts: Prompt -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- SweetAlert2 CSS/JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        body { 
+            background-color: #f4f7f6; 
+            font-family: 'Prompt', sans-serif;
+            font-size: 16px;
+        }
+        .app-container { 
+            max-width: 550px; 
+            margin: 20px auto; 
+            background: #ffffff; 
+            padding: 30px 25px; 
+            border-radius: 15px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08); 
+        }
+        .bch-logo { 
+            max-width: 140px; 
+            display: block; 
+            margin: 0 auto 20px auto; 
+        }
+        
+        /* ปรับแต่งรูปภาพให้ดูรู้ว่ากดได้ */
+        .jacket-preview { 
+            width: 100%; 
+            border-radius: 10px; 
+            margin-top: 25px; 
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            cursor: pointer; /* เปลี่ยนเมาส์เป็นรูปมือเมื่อชี้ */
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* เพิ่มความสมูทเวลาชี้ */
+        }
+        .jacket-preview:hover {
+            transform: scale(1.02); /* ขยายรูปนิดนึงเมื่อนำเมาส์ไปชี้ */
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        .click-hint {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 8px;
+        }
+
+        .form-label { 
+            font-weight: 500; 
+            color: #2c3e50; 
+            font-size: 1.15rem;
+        }
+        .form-control, .form-select {
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 1.1rem;
+        }
+        .btn-custom { 
+            background-color: #0d6efd; 
+            color: white; 
+            font-weight: 600; 
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 1.25rem;
+            transition: all 0.3s ease;
+        }
+        .btn-custom:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3);
+        }
+        .btn-custom:disabled {
+            background-color: #6c757d;
+            transform: none;
+            box-shadow: none;
+        }
+        .title-text {
+            color: #0d6efd;
+            font-weight: 700;
+            font-size: 1.6rem;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="app-container">
+            <img src="https://tain6666.github.io/bch.github.io/pic/LOGOBCH2025.png" alt="BCH Logo" class="bch-logo">
+            
+            <h4 class="text-center mb-4 title-text">ระบบลงทะเบียน Size เสื้อแจ็คเก็ต BCH</h4>
+
+            <form id="jacketForm">
+                <div class="mb-3">
+                    <label class="form-label">รหัสพนักงานหรือรหัสแพทย์</label>
+                    <input type="text" id="empId" class="form-control" maxlength="6" placeholder="ระบุรหัสพนักงาน" required>
+                    <div class="form-text text-muted" style="font-size: 0.95rem;">ตัวอย่าง: 012345 (หากมี 0 นำหน้าให้ใส่ด้วย) หรือ Dxxxxx</div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">ชื่อ-สกุล</label>
+                    <input type="text" id="name" class="form-control" placeholder="ระบุชื่อ-นามสกุล" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">สายงาน</label>
+                    <select id="division" class="form-select" required>
+                        <option value="" disabled selected>กำลังโหลดข้อมูลสายงาน...</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">หน่วยงาน</label>
+                    <select id="department" class="form-select" required disabled>
+                        <option value="" disabled selected>กรุณาเลือกสายงานก่อน</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Size เสื้อแจ็คเก็ต</label>
+                    <select id="size" class="form-select" required>
+                        <option value="" disabled selected>กรุณาเลือก Size</option>
+                        <option value="2XS">size 2XS (อก 35 นิ้ว ความยาวเสื้อ(หลัง) 23.5 นิ้ว)</option>
+                        <option value="XS">size XS (อก 37 นิ้ว ความยาวเสื้อ(หลัง) 23.5 นิ้ว)</option>
+                        <option value="S">size S (อก 39 นิ้ว ความยาวเสื้อ(หลัง) 24.5 นิ้ว)</option>
+                        <option value="M">size M (อก 41 นิ้ว ความยาวเสื้อ(หลัง) 25.5 นิ้ว)</option>
+                        <option value="L">size L (อก 43 นิ้ว ความยาวเสื้อ(หลัง) 25.5 นิ้ว)</option>
+                        <option value="XL">size XL (อก 45 นิ้ว ความยาวเสื้อ(หลัง) 26.5 นิ้ว)</option>
+                        <option value="2XL">size 2XL (อก 47 นิ้ว ความยาวเสื้อ(หลัง) 27.5 นิ้ว)</option>
+                        <option value="3XL">size 3XL (อก 49 นิ้ว ความยาวเสื้อ(หลัง) 27.5 นิ้ว)</option>
+                        <option value="4XL">size 4XL (อก 51 นิ้ว ความยาวเสื้อ(หลัง) 29.5 นิ้ว)</option>
+                        <option value="5XL">size 5XL (อก 53 นิ้ว ความยาวเสื้อ(หลัง) 29.5 นิ้ว)</option>
+                        <option value="6XL">size 5XL (อก 55 นิ้ว ความยาวเสื้อ(หลัง) 29.5 นิ้ว)</option>
+                    </select>
+                </div>
+                
+                <button type="submit" id="submitBtn" class="btn btn-custom w-100 py-2 mt-3">ยืนยันการลงทะเบียน</button>
+            </form>
+
+            <!-- เพิ่ม ID ให้รูปภาพเพื่อให้ JavaScript เรียกใช้งานได้ -->
+            <img src="https://raw.githubusercontent.com/Tain6666/jacket2026/refs/heads/main/Jacket2026.jpg" alt="รูปแบบ Jacket" class="jacket-preview" id="jacketImg">
+            <div class="click-hint">(คลิกที่รูปเพื่อขยาย)</div>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyD1-YR5eK4lkUrBHnwvtKMFx0eju1wK4_rVSKDqf95pN2iVFgPHFbmUFZXaXxGztyS/exec'; 
+        let listData = {};
+
+        window.onload = async () => {
+            try {
+                const response = await fetch(SCRIPT_URL);
+                listData = await response.json();
+
+                const divisionSelect = document.getElementById('division');
+                divisionSelect.innerHTML = '<option value="" disabled selected>เลือกสายงาน</option>';
+
+                for (const div in listData) {
+                    let option = document.createElement('option');
+                    option.value = div;
+                    option.textContent = div;
+                    divisionSelect.appendChild(option);
+                }
+            } catch (error) {
+                console.error('Error fetching list data:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: '<span style="font-family: \'Prompt\', sans-serif;">ข้อผิดพลาด</span>',
+                    html: '<span style="font-family: \'Prompt\', sans-serif;">ไม่สามารถเชื่อมต่อฐานข้อมูลสายงานได้</span>',
+                    confirmButtonText: '<span style="font-family: \'Prompt\', sans-serif;">ตกลง</span>',
+                    confirmButtonColor: '#0d6efd'
+                });
+            }
+        };
+
+        document.getElementById('division').addEventListener('change', function() {
+            const deptSelect = document.getElementById('department');
+            const selectedDiv = this.value;
+
+            deptSelect.innerHTML = '<option value="" disabled selected>เลือกหน่วยงาน</option>';
+            deptSelect.disabled = false;
+
+            if (listData[selectedDiv]) {
+                listData[selectedDiv].forEach(dept => {
+                    let option = document.createElement('option');
+                    option.value = dept;
+                    option.textContent = dept;
+                    deptSelect.appendChild(option);
+                });
+            }
+        });
+
+        // ฟังก์ชันสำหรับคลิกขยายรูปภาพ
+        document.getElementById('jacketImg').addEventListener('click', function() {
+            Swal.fire({
+                imageUrl: this.src,
+                imageAlt: 'รูปแบบ Jacket ขยาย',
+                width: '90%', // กำหนดให้กว้าง 90% ของหน้าจอ
+                showCloseButton: true,
+                showConfirmButton: false, // ซ่อนปุ่ม OK เพราะแค่เปิดดูรูป
+                padding: '1em',
+                backdrop: `rgba(0,0,0,0.85)`, // พื้นหลังสีดำโปร่งแสงทำให้รูปเด่นขึ้น
+                customClass: {
+                    image: 'img-fluid' // ให้รูปภาพปรับขนาดตามหน้าจออัตโนมัติ
+                }
+            });
+        });
+
+        document.getElementById('jacketForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'กำลังประมวลผล...';
+
+            const empId = document.getElementById('empId').value;
+            const name = document.getElementById('name').value;
+            const division = document.getElementById('division').value;
+            const department = document.getElementById('department').value;
+            const size = document.getElementById('size').value;
+
+            Swal.fire({
+                title: '<span style="font-family: \'Prompt\', sans-serif;">กำลังตรวจสอบข้อมูล...</span>',
+                html: '<span style="font-family: \'Prompt\', sans-serif;">กรุณารอสักครู่</span>',
+                allowOutsideClick: false,
+                animation: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ empId, name, division, department, size })
+                });
+
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '<span style="font-family: \'Prompt\', sans-serif;">บันทึกสำเร็จ!</span>',
+                        html: `<span style="font-family: 'Prompt', sans-serif;">${result.message}</span>`,
+                        confirmButtonText: '<span style="font-family: \'Prompt\', sans-serif;">ตกลง</span>',
+                        confirmButtonColor: '#0d6efd'
+                    }).then(() => {
+                        document.getElementById('jacketForm').reset();
+                        document.getElementById('department').disabled = true;
+                        document.getElementById('department').innerHTML = '<option value="" disabled selected>กรุณาเลือกสายงานก่อน</option>';
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: '<span style="font-family: \'Prompt\', sans-serif;">พบข้อมูลซ้ำ</span>',
+                        html: `<span style="font-family: 'Prompt', sans-serif;">${result.message}</span>`,
+                        confirmButtonText: '<span style="font-family: \'Prompt\', sans-serif;">ตกลง</span>',
+                        confirmButtonColor: '#d33'
+                    });
+                }
+            } catch (error) {
+                console.error('Submission error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: '<span style="font-family: \'Prompt\', sans-serif;">ข้อผิดพลาด</span>',
+                    html: '<span style="font-family: \'Prompt\', sans-serif;">ระบบไม่สามารถส่งข้อมูลได้ กรุณาลองใหม่อีกครั้ง</span>',
+                    confirmButtonText: '<span style="font-family: \'Prompt\', sans-serif;">ตกลง</span>',
+                    confirmButtonColor: '#0d6efd'
+                });
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'ยืนยันการลงทะเบียน';
+            }
+        });
+    </script>
+</body>
+</html>
