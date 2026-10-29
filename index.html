@@ -13,6 +13,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- FontAwesome (Icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <!-- SweetAlert2 CSS/JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
@@ -91,6 +94,9 @@
             font-size: 1.6rem;
             letter-spacing: 0.5px;
         }
+        .icon-color {
+            color: #0d6efd;
+        }
     </style>
 </head>
 <body>
@@ -98,36 +104,38 @@
         <div class="app-container">
             <img src="https://tain6666.github.io/bch.github.io/pic/LOGOBCH2025.png" alt="BCH Logo" class="bch-logo">
             
-            <h4 class="text-center mb-4 title-text">ระบบลงทะเบียน Size เสื้อแจ็คเก็ต BCH</h4>
+            <h4 class="text-center mb-4 title-text">
+                <i class="fa-solid fa-shirt me-2"></i>ระบบลงทะเบียน Size เสื้อแจ็คเก็ต
+            </h4>
 
             <form id="jacketForm">
                 <div class="mb-3">
-                    <label class="form-label">รหัสพนักงานหรือรหัสแพทย์</label>
+                    <label class="form-label"><i class="fa-regular fa-id-card icon-color me-2"></i>รหัสพนักงานหรือรหัสแพทย์</label>
                     <input type="text" id="empId" class="form-control" maxlength="6" placeholder="ระบุรหัสพนักงาน" required>
                     <div class="form-text text-muted" style="font-size: 0.95rem;">ตัวอย่าง: 012345 (หากมี 0 นำหน้าให้ใส่ด้วย) หรือ Dxxxxx</div>
                 </div>
                 
                 <div class="mb-3">
-                    <label class="form-label">ชื่อ-สกุล</label>
+                    <label class="form-label"><i class="fa-regular fa-user icon-color me-2"></i>ชื่อ-สกุล</label>
                     <input type="text" id="name" class="form-control" placeholder="ระบุชื่อ-นามสกุล" required>
                 </div>
                 
                 <div class="mb-3">
-                    <label class="form-label">สายงาน</label>
+                    <label class="form-label"><i class="fa-solid fa-sitemap icon-color me-2"></i>สายงาน</label>
                     <select id="division" class="form-select" required>
                         <option value="" disabled selected>เลือกสายงาน</option>
                     </select>
                 </div>
                 
                 <div class="mb-3">
-                    <label class="form-label">หน่วยงาน</label>
+                    <label class="form-label"><i class="fa-solid fa-building-user icon-color me-2"></i>หน่วยงาน</label>
                     <select id="department" class="form-select" required disabled>
                         <option value="" disabled selected>กรุณาเลือกสายงานก่อน</option>
                     </select>
                 </div>
                 
                 <div class="mb-3">
-                    <label class="form-label">Size เสื้อแจ็คเก็ต</label>
+                    <label class="form-label"><i class="fa-solid fa-tape icon-color me-2"></i>Size เสื้อแจ็คเก็ต</label>
                     <select id="size" class="form-select" required>
                         <option value="" disabled selected>กรุณาเลือก Size</option>
                         <option value="2XS">size 2XS (อก 35 นิ้ว ความยาวเสื้อ(หลัง) 23.5 นิ้ว)</option>
@@ -144,18 +152,20 @@
                     </select>
                 </div>
                 
-                <button type="submit" id="submitBtn" class="btn btn-custom w-100 py-2 mt-3">ยืนยันการลงทะเบียน</button>
+                <button type="submit" id="submitBtn" class="btn btn-custom w-100 py-2 mt-3">
+                    <i class="fa-solid fa-paper-plane me-2"></i>ยืนยันการลงทะเบียน
+                </button>
             </form>
 
             <img src="https://raw.githubusercontent.com/Tain6666/jacket2026/refs/heads/main/Jacket2026.jpg" alt="รูปแบบ Jacket" class="jacket-preview" id="jacketImg">
-            <div class="click-hint">(คลิกที่รูปเพื่อขยาย)</div>
+            <div class="click-hint"><i class="fa-solid fa-magnifying-glass-plus me-1"></i>(คลิกที่รูปเพื่อขยาย)</div>
         </div>
     </div>
 
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyD1-YR5eK4lkUrBHnwvtKMFx0eju1wK4_rVSKDqf95pN2iVFgPHFbmUFZXaXxGztyS/exec'; 
         
-        // ฐานข้อมูลสายงานและหน่วยงานแบบฝังในโค้ดเว็บ (Hardcoded Data) เพื่อความรวดเร็วสูงสุด
+        // ฐานข้อมูลสายงานและหน่วยงานแบบฝังในโค้ดเว็บ
         const listData = {
             "ขึ้นตรงผู้บริหาร": [
                 "ผู้บริหาร", "ฝ่ายศาสนกิจ", "หน่วยประกาศพระกิตติคุณ", "หน่วยการอภิบาล", "หน่วยบริการชุมชนและสังคม", 
@@ -198,7 +208,6 @@
             ]
         };
 
-        // โหลดข้อมูลสายงานเข้า Dropdown ทันทีเมื่อเปิดเว็บโดยไม่ต้องรอเชื่อมต่อฐานข้อมูล
         window.onload = () => {
             const divisionSelect = document.getElementById('division');
             for (const div in listData) {
@@ -226,7 +235,6 @@
             }
         });
 
-        // ฟังก์ชันสำหรับคลิกขยายรูปภาพ
         document.getElementById('jacketImg').addEventListener('click', function() {
             Swal.fire({
                 imageUrl: this.src,
@@ -236,9 +244,7 @@
                 showConfirmButton: false, 
                 padding: '1em',
                 backdrop: `rgba(0,0,0,0.85)`, 
-                customClass: {
-                    image: 'img-fluid' 
-                }
+                customClass: { image: 'img-fluid' }
             });
         });
 
@@ -247,7 +253,7 @@
             
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = true;
-            submitBtn.innerHTML = 'กำลังประมวลผล...';
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>กำลังประมวลผล...';
 
             const empId = document.getElementById('empId').value;
             const name = document.getElementById('name').value;
@@ -273,10 +279,24 @@
                 const result = await response.json();
 
                 if (result.status === 'success') {
+                    // จัดหน้าตาข้อมูลที่จะแสดงในหน้าจอสำเร็จ
+                    const successHtml = `
+                        <div style="font-family: 'Prompt', sans-serif; text-align: left; background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; font-size: 1rem; border: 1px solid #e9ecef;">
+                            <p class="mb-1"><i class="fa-regular fa-id-card me-2 text-primary"></i><strong>รหัส:</strong> ${empId}</p>
+                            <p class="mb-1"><i class="fa-regular fa-user me-2 text-primary"></i><strong>ชื่อ:</strong> ${name}</p>
+                            <p class="mb-1"><i class="fa-solid fa-sitemap me-2 text-primary"></i><strong>สายงาน:</strong> ${division}</p>
+                            <p class="mb-1"><i class="fa-solid fa-building-user me-2 text-primary"></i><strong>หน่วยงาน:</strong> ${department}</p>
+                            <p class="mb-0"><i class="fa-solid fa-tape me-2 text-primary"></i><strong>Size:</strong> <span class="text-danger fw-bold">${size}</span></p>
+                        </div>
+                        <p class="text-danger mb-0" style="font-family: 'Prompt', sans-serif; font-size: 1.1rem; font-weight: 600;">
+                            <i class="fa-solid fa-camera me-1"></i> กรุณาจับภาพหน้าจอเพื่อเป็นหลักฐาน
+                        </p>
+                    `;
+
                     Swal.fire({
                         icon: 'success',
                         title: '<span style="font-family: \'Prompt\', sans-serif;">บันทึกสำเร็จ!</span>',
-                        html: `<span style="font-family: 'Prompt', sans-serif;">${result.message}</span>`,
+                        html: successHtml,
                         confirmButtonText: '<span style="font-family: \'Prompt\', sans-serif;">ตกลง</span>',
                         confirmButtonColor: '#0d6efd'
                     }).then(() => {
@@ -304,7 +324,7 @@
                 });
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = 'ยืนยันการลงทะเบียน';
+                submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i>ยืนยันการลงทะเบียน';
             }
         });
     </script>
